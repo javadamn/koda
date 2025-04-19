@@ -9,7 +9,7 @@ def embed_chunks(chunks, model_name='all-MiniLM-L6-v2'):
     texts = [chunk["text"] for chunk in chunks]
     return model.encode(texts, convert_to_numpy=True)
 
-def build_faiss_index(chunks, embeddings, index_path="outputs/faiss_index"):
+def build_faiss_index(chunks, embeddings, index_path="data/faiss_index"):
     dim = embeddings.shape[1]
     index = faiss.IndexFlatL2(dim)
     index.add(embeddings)
@@ -17,7 +17,7 @@ def build_faiss_index(chunks, embeddings, index_path="outputs/faiss_index"):
     with open(f"{index_path}_chunks.pkl", "wb") as f:
         pickle.dump(chunks, f)
 
-def load_faiss_index(index_path="outputs/faiss_index"):
+def load_faiss_index(index_path="data/faiss_index"):
     index = faiss.read_index(f"{index_path}.index")
     with open(f"{index_path}_chunks.pkl", "rb") as f:
         chunks = pickle.load(f)

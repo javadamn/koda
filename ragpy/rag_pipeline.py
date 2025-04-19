@@ -1,10 +1,13 @@
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from sentence_transformers import SentenceTransformer
+import numpy as np
+
 
 
 # --------- RAG QUERY ---------
 def query_graphrag(query, model, index, chunks, top_k=5):
     query_embedding = model.encode([query])[0]
+    # print("Query embedding shape:", query_embedding.shape)
     distances, indices = index.search(np.array([query_embedding]), top_k)
     results = [chunks[i] for i in indices[0]]
     combined_context = "\n---\n".join([r["text"] for r in results])
@@ -15,10 +18,10 @@ def query_graphrag(query, model, index, chunks, top_k=5):
 
 
 class BioRAGPipeline:
-    def __init__(self, model_name: str = "google/flan-t5-base"):
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
-        self.embedding_model = SentenceTransformer('pritamdeka/S-PubMedBert-MS-MARCO')
+    def __init__(self, embedding_model_name: str = 'all-MiniLM-L6-v2'):
+        self.tokenizer = AutoTokenizer.from_pretrained('google/flan-t5-base')
+        self.model = AutoModelForSeq2SeqLM.from_pretrained('google/flan-t5-base')
+        self.embedding_model = SentenceTransformer(embedding_model_name)
         self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
         
     def generate_answer(self, context: str, question: str) -> str:

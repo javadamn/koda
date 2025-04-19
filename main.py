@@ -1,10 +1,10 @@
 # main.py
 
 import os
-import numpy as np
 import pandas as pd
 from pathlib import Path
-
+from sentence_transformers import SentenceTransformer
+import pickle
 from config.paths import (
     PAIRWISE_PATH, STRAINS_CSV, ABUNDANCE_CSV, MODELS_CSV
 )
@@ -15,22 +15,58 @@ from utils.vmhcache import VMHCacheClient
 from utils.id_mapper import build_id_to_strain_map, replace_ids_with_names
 from utils.save_load_graph import save_graph, load_graph
 from utils.graph_builder import create_graphrag_knowledge_graph
-from ragpy.chunker import graph_to_text_chunks_from_neo4j
+from ragpy.chunker import graph_to_text_chunks_from_neo4j, graph_to_text_chunks, graph_to_crossfeeding_chunks
 from ragpy.embed_chunks import embed_chunks, build_faiss_index, load_faiss_index
 from ragpy.rag_pipeline import BioRAGPipeline, query_graphrag
+from neo4j_c.configNeo4j import get_driver
+import networkx as nx
+from collections import Counter
 
-GRAPH_PATH = "outputs/graph.gpickle"
-CHUNK_PATH = "outputs/chunks.pkl"
-INDEX_PATH = "outputs/faiss_index"
+GRAPH_PATH = "data"
+CHUNK_PATH = "data/chunks.pkl"
+INDEX_PATH = "data/faiss_index"
 
-import pickle
+EMBEDDING_MODEL_NAME = 'pritamdeka/S-PubMedBert-MS-MARCO' #'all-MiniLM-L6-v2'
+
+
 
 
 def main():
-    # Step 1: Load or build the knowledge graph
+    #  1:: loading/build the knowledge graph-------------------------------------------
     if os.path.exists(GRAPH_PATH):
         print("📦 Loading saved graph...")
-        G = load_graph(GRAPH_PATH)
+        G = load_graph()
+        #testing the graph
+        print(f"Total nodes in G: {len(G.nodes)}")
+        print(f"Total edges in G: {len(G.edges)}")
+        node_types = Counter(nx.get_node_attributes(G, "type").values())
+        print("Node types:", node_types)
+
+        edge_types = Counter([G[u][v]['type'] for u, v in G.edges])
+        print("Edge types:", edge_types)
+
+        microbes = [n for n, d in G.nodes(data=True) if d['type'] == 'microbe']
+        metabolites = [n for n, d in G.nodes(data=True) if d['type'] == 'metabolite']
+
+        print("Example microbes:")
+        for m in microbes[:3]:
+            print(m, G.nodes[m])
+
+        print("\nExample metabolites:")
+        for m in metabolites[:3]:
+            print(m, G.nodes[m])
+
+        example_microbe = microbes[0]
+        print(f"\nEdges for {example_microbe}:")
+        for neighbor in G.successors(example_microbe):
+            print(f"{example_microbe} → {neighbor}, edge type: {G[example_microbe][neighbor]['type']}, description: {G[example_microbe][neighbor].get('description')}")
+
+        example_met = metabolites[0]
+        print(f"\nConsumers of {example_met}:")
+        for pred in G.predecessors(example_met):
+            print(f"{pred} → {example_met}, edge type: {G[pred][example_met]['type']}, flux: {G[pred][example_met].get('flux')}")
+        # Stop
+        
     else:
         print("🔍 Reading and processing input data...")
         pairwise_data, _, _, _, strain_mean_biomass = read_pairwise_data(PAIRWISE_PATH)
@@ -55,37 +91,51 @@ def main():
         }
 
         G = create_graphrag_knowledge_graph(pairwise_data, strain_mean_biomass, microbial_abundance, metabolite_info)
-        save_graph(G, GRAPH_PATH)
+        save_graph(G)
         print(f"✅ Graph built and saved with {len(G.nodes)} nodes.")
 
-    # Step 2: Chunk the graph into text
+    #2:: chunk the graph into text----------------------------------------------------
     if os.path.exists(CHUNK_PATH):
         print("📚 Loading chunks from file...")
         with open(CHUNK_PATH, "rb") as f:
             chunks = pickle.load(f)
     else:
-        print("🧩 Chunking graph into text...")
-        chunks = graph_to_text_chunks_from_neo4j(G)
+        print("🔌 Connecting to Neo4j and chunking graph...")
+        driver = get_driver()
+        print("🧩 Chunking graph into text freom driver...")
+        chunks = graph_to_text_chunks_from_neo4j(driver)
+        node_chunks = graph_to_text_chunks(G)
+        event_chunks = graph_to_crossfeeding_chunks(G)
+        chunks=event_chunks
         with open(CHUNK_PATH, "wb") as f:
             pickle.dump(chunks, f)
         print(f"✅ Chunks saved ({len(chunks)} total).")
 
-    # Step 3: Build or load FAISS index
+    # 3:: Building/loading FAISS index-------------------------------------------------
     index_file = f"{INDEX_PATH}.index"
     chunk_file = f"{INDEX_PATH}_chunks.pkl"
+
 
     if os.path.exists(index_file) and os.path.exists(chunk_file):
         print("📈 Loading FAISS index...")
         index, loaded_chunks = load_faiss_index(INDEX_PATH)
     else:
         print("💥 Generating embeddings and building index...")
-        embeddings = embed_chunks(chunks)
+        embeddings = embed_chunks(chunks, model_name=EMBEDDING_MODEL_NAME)
         build_faiss_index(chunks, embeddings, INDEX_PATH)
         index, loaded_chunks = load_faiss_index(INDEX_PATH)
 
-    # Step 4: Run RAG query
+    expected_dim = SentenceTransformer(EMBEDDING_MODEL_NAME).get_sentence_embedding_dimension()
+    if index.d != expected_dim:
+        print(f"⚠️ FAISS index dimension ({index.d}) doesn't match embedding model dimension ({expected_dim}).")
+        print("🔄 Rebuilding FAISS index...")
+        embeddings = SentenceTransformer(EMBEDDING_MODEL_NAME).encode([c["text"] for c in chunks], convert_to_numpy=True)
+        build_faiss_index(chunks, embeddings, INDEX_PATH)
+        index, loaded_chunks = load_faiss_index(INDEX_PATH)
+
+    #4:: run RAG query-----------------------------------------------------
     print("🧠 Initializing BioRAG pipeline...")
-    rag_pipeline = BioRAGPipeline()
+    rag_pipeline = BioRAGPipeline(embedding_model_name=EMBEDDING_MODEL_NAME)
 
     query = "Which microbes are responsible for producing butyrate and how does it affect gut health?"
     print(f"❓ Query: {query}")
