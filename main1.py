@@ -41,18 +41,41 @@ class Neo4jKnowledgeGraph:
 
 # Global Neo4j object
 kg = Neo4jKnowledgeGraph("bolt://localhost:7687", "neo4j", "Javadad6908")
+print(kg.cypher_query("MATCH (n) RETURN n LIMIT 1"))
+
 
 # TOOL DEFINITIONS
+# @tool("Biological Entity Extractor")
+# def extract_biological_entities(query: str) -> dict:
+#     """Extracts microbes, metabolites, processes and terms from a query."""
+#     prompt = f'''
+#     Extract biological entities from the following query:
+#     "{query}"
+#     Return a JSON with keys: microbes, metabolites, processes
+#     '''
+#     result = llm.invoke(prompt)
+#     return json.loads(result.content)
 @tool("Biological Entity Extractor")
 def extract_biological_entities(query: str) -> dict:
-    """Extracts microbes, metabolites, processes, and health-related terms from a query."""
+    """Extracts microbes, metabolites, processes and terms from a query, plus related chunks."""
     prompt = f'''
     Extract biological entities from the following query:
     "{query}"
-    Return a JSON with keys: microbes, metabolites, processes, health_terms
+    Return a JSON with keys: microbes, metabolites, processes
     '''
     result = llm.invoke(prompt)
-    return json.loads(result.content)
+    try:
+        parsed = json.loads(result.content)
+    except Exception as e:
+        print(f"[Entity Extractor] Failed to parse LLM output: {e}")
+        return {"error": "Failed to parse biological entities"}
+
+    # Add FAISS semantic enrichment
+    related_chunks = kg.semantic_search(query)
+    parsed["related_chunks"] = [chunk["text"] for chunk in related_chunks[:3]]
+
+    return parsed
+
 
 
 @tool("Flux Analyzer")
@@ -60,11 +83,11 @@ def flux_analysis_tool(metabolites: List[str]) -> list:
     """Performs metabolic flux analysis between microbes using provided metabolites."""
     cypher = '''
     MATCH (producer:Microbe)-[prod:PRODUCES]->(met:Metabolite)<-[cons:CONSUMES]-(consumer:Microbe)
-    WHERE met.name IN $metabolites
+    WHERE toLower(met.name) IN $metabolites
     RETURN 
-        producer.name AS producer,
+        producer.id AS producer,
         met.name AS metabolite,
-        consumer.name AS consumer,
+        consumer.id AS consumer,
         prod.flux AS production_flux,
         cons.flux AS consumption_flux,
         abs(prod.flux - cons.flux) AS flux_imbalance
@@ -194,8 +217,8 @@ class MicrobialAnalysisPipeline:
 # agents=[
 #         query_interpreter_agent,
 #         flux_analyst_agent,
-#         # hypothesis_engine_agent,   <- 👈 disabled
-#         # health_impact_analyst_agent,  <- 👈 disabled
+#         # hypothesis_engine_agent,   <-  disabled
+#         # health_impact_analyst_agent,  <-  disabled
 #         report_synthesizer_agent,
 
 ####
