@@ -3,20 +3,12 @@ import os
 import pandas as pd
 import logging
 from neo4j import GraphDatabase
-from config.paths import (
-    PAIRWISE_PATH, STRAINS_CSV, ABUNDANCE_CSV, MODELS_CSV
-)
-
+from configs.paths import (PAIRWISE_PATH, STRAINS_CSV, ABUNDANCE_CSV, MODELS_CSV)
 from utils.data_loader import read_pairwise_data
 from utils.abundance_mapper import get_abundance
 from utils.vmhcache import VMHCacheClient
 from utils.id_mapper import build_id_to_strain_map, replace_ids_with_names
 from utils.save_load_graph import save_graph, load_graph
-from collections import defaultdict
-from neo4j import GraphDatabase
-import networkx as nx
-import pandas as pd
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -81,21 +73,12 @@ def create_graphrag_knowledge_graph(pairwise_data, strain_mean_biomass,
     return G
 
 
-
-# Configure logging
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
-handler = logging.StreamHandler()
-formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-
 def convert_nx_to_neo4j(G, neo4j_uri, neo4j_user, neo4j_password):
-    # Initialize the Neo4j driver
+    #init Neo4j driver
     driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
 
     def create_node(tx, node_id, labels, properties):
-        # MERGE node by name and set properties
+        #let MERGE node by name and set properties
         query = (
             f"MERGE (n:{':'.join(labels)} {{name: $name}}) "
             "SET n += $props"
@@ -113,7 +96,7 @@ def convert_nx_to_neo4j(G, neo4j_uri, neo4j_user, neo4j_password):
         tx.run(query, source_name=source_name, target_name=target_name, props=rel_props)
 
     with driver.session() as session:
-        #clear existing data
+        #clear existing data >> can be removed >> for now i just prefered this one enabled
         session.run("MATCH (n) DETACH DELETE n")
 
         for node_id in G.nodes():
@@ -181,6 +164,12 @@ def convert_nx_to_neo4j(G, neo4j_uri, neo4j_user, neo4j_password):
 
     driver.close()
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.WARNING)
+handler = logging.StreamHandler()
+formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 NEO4J_URI = os.getenv("NEO4J_URI", "bolt://localhost:7687")
 NEO4J_USER = os.getenv("NEO4J_USER", "neo4j")
