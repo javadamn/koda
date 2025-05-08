@@ -1,0 +1,200 @@
+species,models
+acetobutylicum,['Clostridium_acetobutylicum_ATCC_824.xml']
+acidilactici,"['Pediococcus_acidilactici_7_4.xml', 'Pediococcus_acidilactici_DSM_20284.xml']"
+acidophilus,"['Lactobacillus_acidophilus_NCFM.xml', 'Lactobacillus_acidophilus_ATCC_4796.xml']"
+adolescentis,['Bifidobacterium_adolescentis_ATCC_15703.xml']
+aeria,['Rothia_aeria_F0474.xml']
+aerofaciens,['Collinsella_aerofaciens_ATCC_25986.xml']
+aeruginosa,['Pseudomonas_aeruginosa_NCGM2_S1.xml']
+agalactiae,['Streptococcus_agalactiae_A909.xml']
+albertii,"['Escherichia_albertii_KF1.xml', 'Escherichia_albertii_TW07627.xml']"
+albus,['Ruminococcus_albus_7.xml']
+alocis,['Filifactor_alocis_ATCC_35896.xml']
+alvei,"['Hafnia_alvei_ATCC_51873.xml', 'Hafnia_alvei_BIDMC_31.xml']"
+amylolyticus,['Lactobacillus_amylolyticus_DSM_11664.xml']
+amylovorus,['Lactobacillus_amylovorus_GRL_1112.xml']
+anaerobius,['Peptostreptococcus_anaerobius_DSM_2949.xml']
+anginosus,['Streptococcus_anginosus_1_2_62CV.xml']
+angulatum,['Bifidobacterium_angulatum_DSM_20098.xml']
+animalis,"['Bifidobacterium_animalis_lactis_BB_12.xml', 'Bifidobacterium_animalis_lactis_DSM_10140.xml', 'Bifidobacterium_animalis_lactis_CNCM_I_2494.xml', 'Bifidobacterium_animalis_lactis_V9.xml', 'Bifidobacterium_animalis_lactis_Bi_07.xml', 'Bifidobacterium_animalis_lactis_Bl_04_ATCC_SD5219.xml', 'Bifidobacterium_animalis_lactis_AD011.xml']"
+aphrophilus,['Aggregatibacter_aphrophilus_NJ8700.xml']
+asaccharolytica,['Porphyromonas_asaccharolytica_DSM_20707.xml']
+atypica,['Veillonella_atypica_ACS_049_V_Sch6.xml']
+aureus,['Staphylococcus_aureus_subsp_aureus_USA300_FPR3757.xml']
+aurimucosum,['Corynebacterium_aurimucosum_ATCC_700975.xml']
+australis,['Streptococcus_australis_ATCC_700641.xml']
+bicirculans,['Ruminococcus_bicirculans_80_3.xml']
+bifidum,"['Bifidobacterium_bifidum_S17.xml', 'Bifidobacterium_bifidum_PRL2010.xml', 'Bifidobacterium_bifidum_BGN4.xml', 'Bifidobacterium_bifidum_NCIMB_41171.xml']"
+bolteae,['Clostridium_bolteae_ATCC_BAA_613.xml']
+botulinum,"['Clostridium_botulinum_A_str_ATCC_19397.xml', 'Clostridium_botulinum_E1_str_BoNT_E_Beluga.xml', 'Clostridium_botulinum_A_str_Hall.xml', 'Clostridium_botulinum_F_str_230613.xml', 'Clostridium_botulinum_Bf.xml', 'Clostridium_botulinum_A_str_ATCC_3502.xml']"
+breve,"['Bifidobacterium_breve_HPH0326.xml', 'Bifidobacterium_breve_UCC2003_NCIMB8807.xml']"
+buccalis,['Leptotrichia_buccalis_C_1013_b.xml']
+butyricum,"['Clostridium_butyricum_DSM_10702.xml', 'Clostridium_butyricum_E4_str_BoNT_E_BL5262.xml']"
+butzleri,['Arcobacter_butzleri_RM4018.xml']
+caccae,['Bacteroides_caccae_ATCC_43185.xml']
+canadensis,['Helicobacter_canadensis_MIT_98_5491.xml']
+cancerogenus,['Enterobacter_cancerogenus_ATCC_35316.xml']
+casei,"['Lactobacillus_casei_ATCC_334.xml', 'Lactobacillus_casei_casei_BL23.xml']"
+casseliflavus,['Enterococcus_casseliflavus_ATCC_12755.xml']
+catenulatum,['Bifidobacterium_catenulatum_DSM_16992.xml']
+catus,['Coprococcus_catus_GD_7.xml']
+cecorum,['Enterococcus_cecorum_DSM_20682.xml']
+cellulosilyticus,['Bacteroides_cellulosilyticus_DSM_14838.xml']
+cellulosolvens,['Eubacterium_cellulosolvens_6.xml']
+champanellensis,['Ruminococcus_champanellensis_18P13.xml']
+cinerea,['Neisseria_cinerea_ATCC_14685.xml']
+cloacae,['Enterobacter_cloacae_EcWSU1.xml']
+coli,"['Escherichia_coli_UTI89_UPEC.xml', 'Escherichia_coli_str_K_12_substr_MG1655.xml', 'Escherichia_coli_O157_H7_str_Sakai.xml', 'Escherichia_coli_SE11.xml']"
+concisus,['Campylobacter_concisus_13826.xml']
+constellatus,"['Streptococcus_constellatus_subsp_pharyngis_SK1060.xml', 'Streptococcus_constellatus_subsp_constellatus_SK53.xml']"
+crispatus,['Lactobacillus_crispatus_125_2_CHN.xml']
+cristatus,['Streptococcus_cristatus_ATCC_51100.xml']
+curtisii,['Mobiluncus_curtisii_ATCC_43063.xml']
+curvatus,['Lactobacillus_curvatus_CRL_705.xml']
+cylindroides,['Eubacterium_cylindroides_T2_87.xml']
+delbrueckii,"['Lactobacillus_delbrueckii_subsp_bulgaricus_ATCC_11842.xml', 'Lactobacillus_delbrueckii_subsp_bulgaricus_ATCC_BAA_365.xml']"
+denticola,"['Prevotella_denticola_DSM20614.xml', 'Prevotella_denticola_F0289.xml']"
+dentium,['Bifidobacterium_dentium_ATCC_27678.xml']
+dentocariosa,['Rothia_dentocariosa_ATCC_17931.xml']
+desulfuricans,['Desulfovibrio_desulfuricans_subsp_desulfuricans_DSM_642.xml']
+difficile,"['Clostridium_difficile_R20291.xml', 'Clostridium_difficile_CD196.xml', 'Clostridium_difficile_NAP07.xml', 'Clostridium_difficile_NAP08.xml']"
+distasonis,['Parabacteroides_distasonis_ATCC_8503.xml']
+dorei,['Bacteroides_dorei_DSM_17855.xml']
+durans,['Enterococcus_durans_ATCC_6056.xml']
+dysenteriae,['Shigella_dysenteriae_Sd197.xml']
+dysgalactiae,['Streptococcus_dysgalactiae_subsp_dysgalactiae_ATCC_27957.xml']
+eligens,['Eubacterium_eligens_ATCC_27750.xml']
+elsdenii,['Megasphaera_elsdenii_DSM_20460.xml']
+enoeca,['Prevotella_enoeca_JCM_12259.xml']
+enterocolitica,['Yersinia_enterocolitica_subsp_enterocolitica_8081.xml']
+epidermidis,['Staphylococcus_epidermidis_ATCC_12228.xml']
+equinus,['Streptococcus_equinus_ATCC_9812.xml']
+equolifaciens,['Adlercreutzia_equolifaciens_DSM_19450.xml']
+faecalis,"['Enterococcus_faecalis_OG1RF_ATCC_47077.xml', 'Enterococcus_faecalis_TX0104.xml', 'Enterococcus_faecalis_TX1322.xml', 'Enterococcus_faecalis_V583.xml', 'Enterococcus_faecalis_TX2134.xml']"
+faecium,['Enterococcus_faecium_TX1330.xml']
+fergusonii,['Escherichia_fergusonii_ATCC_35469.xml']
+fermentans,['Acidaminococcus_fermentans_DSM_20731.xml']
+fermentum,"['Lactobacillus_fermentum_IFO_3956.xml', 'Lactobacillus_fermentum_ATCC_14931.xml']"
+fibrisolvens,['Butyrivibrio_fibrisolvens_16_4.xml']
+finegoldii,['Alistipes_finegoldii_DSM_17242.xml']
+flexneri,['Shigella_flexneri_2002017.xml']
+formigenes,"['Oxalobacter_formigenes_HOxBLS.xml', 'Oxalobacter_formigenes_OXCC13.xml']"
+forsythia,['Tannerella_forsythia_ATCC_43037.xml']
+fragilis,"['Bacteroides_fragilis_638R.xml', 'Bacteroides_fragilis_YCH46.xml', 'Bacteroides_fragilis_3_1_12.xml', 'Bacteroides_fragilis_NCTC_9343.xml']"
+freudenreichii,['Propionibacterium_freudenreichii_subsp_shermanii_CIRM_BIA1.xml']
+freundii,"['Citrobacter_freundii_UCI_31.xml', 'Citrobacter_freundii_ATCC_8090.xml']"
+gallolyticus,['Streptococcus_gallolyticus_subsp_gallolyticus_ATCC_43143.xml']
+garvieae,['Lactococcus_garvieae_ATCC_49156.xml']
+gasseri,['Lactobacillus_gasseri_ATCC_33323.xml']
+gelidum,['Leuconostoc_gelidum_JB7.xml']
+gingivalis,['Porphyromonas_gingivalis_W83.xml']
+gonidiaformans,"['Fusobacterium_gonidiaformans_3_1_5R.xml', 'Fusobacterium_gonidiaformans_ATCC_25563.xml']"
+gordonii,['Streptococcus_gordonii_str_Challis_substr_CH1.xml']
+gracilis,['Campylobacter_gracilis_RM3268.xml']
+hadrus,['Anaerostipes_hadrus_DSM_3319.xml']
+haemolyticus,['Haemophilus_haemolyticus_M19501.xml']
+hallii,"['Eubacterium_hallii_L2_7.xml', 'Eubacterium_hallii_DSM_3353.xml']"
+hansenii,['Blautia_hansenii_VPI_C7_24_DSM_20583.xml']
+hirae,['Enterococcus_hirae_ATCC_9790.xml']
+hominis,"['Staphylococcus_hominis_subsp_hominis_C80.xml', 'Campylobacter_hominis_ATCC_BAA_381.xml', 'Roseburia_hominis_A2_183.xml', 'Mycoplasma_hominis_ATCC_23114.xml']"
+hypermegale,['Megamonas_hypermegale_ART12_1.xml']
+infantarius,['Streptococcus_infantarius_subsp_infantarius_ATCC_BAA_102.xml']
+influenzae,['Haemophilus_influenzae_R2846.xml']
+innocuum,['Clostridium_innocuum_2959.xml']
+inopinata,['Scardovia_inopinata_F0304.xml']
+intermedia,"['Prevotella_intermedia_17.xml', 'Prevotella_intermedia_ATCC_25611.xml']"
+intermedius,['Streptococcus_intermedius_JTH08.xml']
+intestinalis,['Roseburia_intestinalis_L1_82.xml']
+intestini,['Acidaminococcus_intestini_RyC_MR95.xml']
+jejuni,"['Campylobacter_jejuni_jejuni_NCTC_11168.xml', 'Campylobacter_jejuni_jejuni_81_176.xml', 'Campylobacter_jejuni_jejuni_M1.xml', 'Campylobacter_jejuni_jejuni_ICDCCJ07004.xml']"
+jensenii,['Lactobacillus_jensenii_1153.xml']
+johnsonii,"['Lactobacillus_johnsonii_DPC_6026.xml', 'Lactobacillus_johnsonii_NCC_533.xml']"
+kashiwanohense,['Bifidobacterium_kashiwanohense_DSM_21854.xml']
+koseri,['Citrobacter_koseri_ATCC_BAA_895.xml']
+lactis,['Lactococcus_lactis_subsp_lactis_Il1403.xml']
+lenta,['Eggerthella_lenta_DSM_2243.xml']
+lentocellum,['Cellulosilyticum_lentocellum_DSM_5427.xml']
+limosum,['Eubacterium_limosum_KIST612.xml']
+longum,"['Bifidobacterium_longum_infantis_157F_NC.xml', 'Bifidobacterium_longum_E18.xml', 'Bifidobacterium_longum_DJO10A.xml', 'Bifidobacterium_longum_longum_BBMN68.xml', 'Bifidobacterium_longum_longum_JDM301.xml', 'Bifidobacterium_longum_infantis_ATCC_15697.xml', 'Bifidobacterium_longum_longum_ATCC_55813.xml', 'Bifidobacterium_longum_longum_CCUG_52486.xml', 'Bifidobacterium_longum_NCC2705.xml', 'Bifidobacterium_longum_longum_JCM_1217.xml']"
+lutetiensis,['Streptococcus_lutetiensis_033.xml']
+magna,['Finegoldia_magna_ATCC_29328.xml']
+marcescens,['Serratia_marcescens_subsp_marcescens_Db11.xml']
+melaninogenica,['Prevotella_melaninogenica_ATCC_25845.xml']
+mesenteroides,['Leuconostoc_mesenteroides_subsp_cremoris_ATCC_19254.xml']
+micra,['Parvimonas_micra_ATCC_33270.xml']
+mirabilis,['Proteus_mirabilis_ATCC_29906.xml']
+mitis,['Streptococcus_mitis_NCTC_12261.xml']
+morbillorum,['Gemella_morbillorum_M424.xml']
+morganii,['Morganella_morganii_subsp_morganii_KT.xml']
+mortiferum,['Fusobacterium_mortiferum_ATCC_9817.xml']
+mucilaginosa,['Rothia_mucilaginosa_DY_18.xml']
+muciniphila,['Akkermansia_muciniphila_ATCC_BAA_835.xml']
+mucosae,['Lactobacillus_mucosae_LM1.xml']
+mutans,['Streptococcus_mutans_ATCC_25175.xml']
+naeslundii,['Actinomyces_naeslundii_str_Howell_279.xml']
+nucleatum,"['Fusobacterium_nucleatum_subsp_animalis_D11.xml', 'Fusobacterium_nucleatum_subsp_animalis_3_1_33.xml', 'Fusobacterium_nucleatum_subsp_vincentii_4_1_13.xml', 'Fusobacterium_nucleatum_subsp_animalis_7_1.xml', 'Fusobacterium_nucleatum_subsp_vincentii_3_1_36A2.xml', 'Fusobacterium_nucleatum_subsp_vincentii_3_1_27.xml', 'Fusobacterium_nucleatum_subsp_nucleatum_ATCC_25586.xml']"
+obeum,"['Blautia_obeum_ATCC_29174.xml', 'Ruminococcus_obeum_A2_162.xml']"
+odontolyticus,['Actinomyces_odontolyticus_ATCC_17982.xml']
+oralis,['Streptococcus_oralis_Uo5.xml']
+oris,"['Lactobacillus_oris_F0423.xml', 'Actinomyces_oris_K20.xml']"
+ovatus,"['Bacteroides_ovatus_SD_CMC_3f.xml', 'Bacteroides_ovatus_SD_CC_2a.xml', 'Bacteroides_ovatus_ATCC_8483.xml']"
+oxytoca,['Klebsiella_oxytoca_KCTC_1686.xml']
+pamelaeae,['Gordonibacter_pamelaeae_7_10_1_bT_DSM_19378.xml']
+paracasei,"['Lactobacillus_paracasei_subsp_paracasei_8700_2.xml', 'Lactobacillus_paracasei_subsp_paracasei_ATCC_25302.xml']"
+parainfluenzae,['Haemophilus_parainfluenzae_T3T1.xml']
+parasanguinis,['Streptococcus_parasanguinis_ATCC_903.xml']
+parvula,['Veillonella_parvula_Te3_DSM_2008.xml']
+parvulum,['Atopobium_parvulum_DSM_20469.xml']
+parvum,['Ureaplasma_parvum_serovar_1_str_ATCC_27813.xml']
+pentosaceus,['Pediococcus_pentosaceus_ATCC_25745.xml']
+perfringens,['Clostridium_perfringens_ATCC_13124.xml']
+periodonticum,"['Fusobacterium_periodonticum_2_1_31.xml', 'Fusobacterium_periodonticum_1_1_41FAA.xml']"
+piger,['Desulfovibrio_piger_ATCC_29098.xml']
+pilosicoli,['Brachyspira_pilosicoli_B2904.xml']
+plantarum,"['Lactobacillus_plantarum_JDM1.xml', 'Lactobacillus_plantarum_WCFS1.xml', 'Lactobacillus_plantarum_subsp_plantarum_ATCC_14917.xml']"
+planticola,['Raoultella_planticola_ATCC_33531.xml']
+plautii,['Flavonifractor_plautii_ATCC_29863.xml']
+pneumoniae,"['Streptococcus_pneumoniae_G54.xml', 'Klebsiella_pneumoniae_pneumoniae_MGH78578.xml']"
+prausnitzii,"['Faecalibacterium_prausnitzii_M21_2.xml', 'Faecalibacterium_prausnitzii_SL3_3.xml', 'Faecalibacterium_prausnitzii_A2_165.xml', 'Faecalibacterium_prausnitzii_L2_6.xml']"
+prevotii,['Anaerococcus_prevotii_DSM_20548.xml']
+pseudocatenulatum,['Bifidobacterium_pseudocatenulatum_DSM_20438.xml']
+pseudolongum,['Bifidobacterium_pseudolongum_subsp_Pseudolongum_DSM_20099.xml']
+pseudopneumoniae,['Streptococcus_pseudopneumoniae_IS7493.xml']
+pylori,['Helicobacter_pylori_26695.xml']
+raffinolactis,['Lactococcus_raffinolactis_4877.xml']
+reuteri,"['Lactobacillus_reuteri_F275_JCM_1112.xml', 'Lactobacillus_reuteri_MM2_3_.xml', 'Lactobacillus_reuteri_SD2112_ATCC_55730.xml', 'Lactobacillus_reuteri_MM4_1A_.xml', 'Lactobacillus_reuteri_CF48_3A_.xml']"
+rhamnosus,"['Lactobacillus_rhamnosus_GG_ATCC_53103.xml', 'Lactobacillus_rhamnosus_LMS2_1.xml']"
+ruminicola,['Prevotella_ruminicola_23.xml']
+ruminis,['Lactobacillus_ruminis_ATCC_25644.xml']
+saccharoperbutylacetonicum,['Clostridium_saccharoperbutylacetonicum_N1_4_HMT.xml']
+sakei,['Lactobacillus_sakei_subsp_sakei_23K.xml']
+salivarius,"['Lactobacillus_salivarius_HO66_ATCC_11741.xml', 'Streptococcus_salivarius_JIM8777.xml', 'Lactobacillus_salivarius_salivarius_UCC118.xml']"
+sanguinis,['Streptococcus_sanguinis_SK36.xml']
+saprophyticus,['Staphylococcus_saprophyticus_subsp_saprophyticus_ATCC_15305.xml']
+scardovii,['Bifidobacterium_scardovii_JCM_12489.xml']
+shahii,['Alistipes_shahii_WAL_8301.xml']
+simulans,['Staphylococcus_simulans_ACS_120_V_Sch1.xml']
+smithii,['Methanobrevibacter_smithii_ATCC_35061.xml']
+sonnei,['Shigella_sonnei_Ss046.xml']
+sordellii,['Clostridium_sordellii_ATCC_9714.xml']
+splanchnicus,['Odoribacter_splanchnicus_1651_6_DSM_20712.xml']
+sporogenes,['Clostridium_sporogenes_ATCC_15579.xml']
+stadtmanae,['Methanosphaera_stadtmanae_DSM_3091.xml']
+sticklandii,['Clostridium_sticklandii_DSM_519.xml']
+subflava,['Neisseria_subflava_NJ9703.xml']
+sulci,['Eubacterium_sulci_ATCC_35585.xml']
+thermophilum,['Bifidobacterium_thermophilum_RBL67.xml']
+thermophilus,['Streptococcus_thermophilus_LMG_18311.xml']
+thetaiotaomicron,['Bacteroides_thetaiotaomicron_VPI_5482.xml']
+torques,"['Ruminococcus_torques_L2_14.xml', 'Ruminococcus_torques_ATCC_27756.xml']"
+tyrobutyricum,['Clostridium_tyrobutyricum_DSM_2637.xml']
+uberis,['Streptococcus_uberis_0140J.xml']
+ulcerans,['Fusobacterium_ulcerans_ATCC_49185.xml']
+uli,['Olsenella_uli_DSM_7084.xml']
+urealyticum,['Ureaplasma_urealyticum_serovar_8_str_ATCC_27618.xml']
+ureolyticus,['Bacteroides_ureolyticus_DSM_20703.xml']
+varium,['Fusobacterium_varium_ATCC_27725.xml']
+vulgatus,['Bacteroides_vulgatus_ATCC_8482.xml']
+whipplei,['Tropheryma_whipplei_str_Twist.xml']
+xylanisolvens,"['Bacteroides_xylanisolvens_XB1A.xml', 'Bacteroides_xylanisolvens_SD_CC_1b.xml']"
+xylosus,"['Staphylococcus_xylosus_NJ.xml', 'Staphylococcus_xylosus_DMB3_Bh1.xml']"

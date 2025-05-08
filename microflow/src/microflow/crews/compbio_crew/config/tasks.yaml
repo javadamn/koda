@@ -1,0 +1,48 @@
+create_query_task:
+  description: >
+    Analyze user query: {question} and consult the provided graph schema to 
+    formulate an optimal Cypher query to execute against the knowledge graph.
+  expected_output: >
+    A JSON string containing the 'query' and 'params' keys (e.g., 
+    '{\"query\": \"MATCH ...\", \"params\": {...}}'). The query should be a Cypher query 
+    that can be executed against the knowledge graph.
+  
+  agent: data_engineer
+
+execute_query_task:
+  description: >
+    Use 'Neo4j Tool' to execute the query against the knowledge graph and 
+    output the results (list of dictionaries) or the error dictionary is returned by the tool.
+  
+  expected_output: >
+    A list of dictionaries representing the query results or a dictionary containing an 'error' key.
+  
+  agent: data_engineer
+
+
+analyze_retrieved_data_task:
+  description: >
+    Review the original user query: {question}
+    * Examine the data retrieved (or error message) from the previous task.
+    * If data exists, analyze it:
+      - Identify key microbes, metabolites, pathways mentioned or relevant.
+      - Describe the relationships found (production, consumption, cross-feeding, pathway involvement).
+      - Quantify findings using flux, abundance, or scores where available.
+      - Discuss potential biological implications or answer the specific question asked.
+    * If an error occurred or no data was found, clearly state this.
+    * Provide a detailed textual analysis.
+  expected_output: >
+    A comprehensive textual analysis of the query results in the context of the user query, 
+    or a statement indicating missing data or errors.
+  agent: content_reviewer
+
+reporting_task:
+  description: >
+    * Take the textual analysis from the previous task.
+    * Synthesize the key findings into a concise and well-structured final report.
+    * Ensure the report directly addresses the original user query.
+    * Format the report clearly (e.g., using markdown).
+  expected_output: >
+    A final, formatted report summarizing the analysis and answering the user query.
+    Formatted as markdown without '```'
+  agent: reporting_analyst
