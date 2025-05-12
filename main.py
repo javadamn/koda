@@ -22,7 +22,7 @@ def main():
         # query3 = "What are the main producers and consumers of Acetate? Compare their abundance if available."
         # query4 = "Find pathways associated with Faecalibacterium_prausnitzii and list their importance scores."
         # query5 = "Tell me about Propionate - which microbes handle it?" # More open-ended
-        query6 = "What microbes both produce and consume Thiamine? What is the net flux if possible?" # Requires more complex query/analysis
+        query6 = "What microbes both produce and consume Thiamine? What is the net flux if possible?" 
 
         user_query = query6 
 

@@ -13,7 +13,7 @@ from utils.save_load_graph import save_graph, load_graph
 logger = logging.getLogger(__name__)
 
 def create_graphrag_knowledge_graph(pairwise_data, strain_mean_biomass,
-                                    microbial_abundance, metabolite_info, subsystem_scores_per_microbe):
+                                    microbial_abundance, metabolite_info, subsystem_scores_per_microbe, gene_df):
     
     G = nx.DiGraph()
 
@@ -70,99 +70,150 @@ def create_graphrag_knowledge_graph(pairwise_data, strain_mean_biomass,
             if score > 0.0010: 
                 G.add_edge(microbe, pathway, type='involved_in', subsystem_score=score, description=f"{pathway} is involved in {microbe} as a pathway with importance score of {score}")
 
+    #microbe-KEGG orthology relationships
+    for _, row in gene_df.iterrows():
+        microbe = row['model']
+        kegg_orthology = row['kegg_orthology']
+        # print(kegg_orthology)
+        if pd.isna(kegg_orthology) or pd.isna(microbe):
+            logger.warning(f"Skipping row with missing KO or microbe: {row}")
+            continue
+            
+        if kegg_orthology not in G:
+            G.add_node(kegg_orthology, type='kegg_orthology', name=kegg_orthology)
+        if not G.has_edge(microbe, kegg_orthology):
+            G.add_edge(microbe, kegg_orthology, type='has_kegg_orthology', 
+                        description=f'{microbe} has an essential gene with kegg orthology (KO) of {kegg_orthology} and the KO description is {row.get("description")}')
+
+
     return G
 
 
-def convert_nx_to_neo4j(G, neo4j_uri, neo4j_user, neo4j_password):
-    #init Neo4j driver
+def convert_nx_to_neo4j(G: nx.DiGraph, neo4j_uri: str, neo4j_user: str,
+                        neo4j_password: str):
+    """
+    Converts a NetworkX DiGraph to a Neo4j graph database.
+
+    Args:
+        G: The NetworkX DiGraph to convert.
+        neo4j_uri: The URI of the Neo4j database (e.g., "neo4j://localhost:7687").
+        neo4j_user: The Neo4j username.
+        neo4j_password: The Neo4j password.
+    """
+
     driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
 
-    def create_node(tx, node_id, labels, properties):
-        #let MERGE node by name and set properties
+    def create_node(tx, node_id: str, labels: list[str], properties: dict):
+        """
+        Creates or updates a node in Neo4j.
+
+        Args:
+            tx: The Neo4j transaction.
+            node_id: The unique identifier of the node.
+            labels: A list of Neo4j labels for the node.
+            properties: A dictionary of node properties.
+        """
         query = (
             f"MERGE (n:{':'.join(labels)} {{name: $name}}) "
             "SET n += $props"
         )
         tx.run(query, name=node_id, props=properties)
 
-    def create_relationship(tx, source_name, source_labels, target_name, target_labels, rel_type, rel_props):
-        # MATCH nodes and CREATE relationship with properties
+    def create_relationship(tx, source_name: str, source_labels: list[str],
+                            target_name: str, target_labels: list[str],
+                            rel_type: str, rel_props: dict):
+        """
+        Creates a relationship between two nodes in Neo4j.
+
+        Args:
+            tx: The Neo4j transaction.
+            source_name: The name of the source node.
+            source_labels: A list of labels for the source node.
+            target_name: The name of the target node.
+            target_labels: A list of labels for the target node.
+            rel_type: The type of the relationship.
+            rel_props: A dictionary of relationship properties.
+        """
         query = (
             f"MATCH (a:{':'.join(source_labels)} {{name: $source_name}}), "
             f"(b:{':'.join(target_labels)} {{name: $target_name}}) "
             f"CREATE (a)-[r:{rel_type}]->(b) "
             "SET r += $props"
         )
-        tx.run(query, source_name=source_name, target_name=target_name, props=rel_props)
+        tx.run(query, source_name=source_name, target_name=target_name,
+               props=rel_props)
 
     with driver.session() as session:
-        #clear existing data >> can be removed >> for now i just prefered this one enabled
         session.run("MATCH (n) DETACH DELETE n")
 
-        for node_id in G.nodes():
-            node_data = G.nodes[node_id]
+        for node_id, node_data in G.nodes(data=True):
             if 'type' not in node_data:
-                print(f"Skipping node {node_id}: Missing 'type' attribute")
+                logger.warning(f"Skipping node {node_id}: Missing 'type' attribute")
                 continue
 
             labels = []
             properties = {}
 
-            if node_data['type'] == 'microbe':
-                labels = ['Microbe']
-                properties = {'name': node_id, 'abundance': node_data.get('abundance')}
-
-            elif node_data['type'] == 'metabolite':
-                labels = ['Metabolite']
+            node_type = node_data['type']
+            if node_type == 'microbe':
+                labels = ['microbe']
+                properties = {'name': node_id,
+                              'abundance': node_data.get('abundance')}
+            elif node_type == 'metabolite':
+                labels = ['metabolite']
                 properties = {'name': node_data.get('name', node_id)}
-
-            elif node_data['type'] == 'pathway':
-                labels = ['Pathway']
+            elif node_type == 'pathway':
+                labels = ['pathway']
                 properties = {'name': node_data.get('name', node_id)}
-
+            elif node_type == 'kegg_orthology': 
+                labels = ['ko']
+                properties = {'name': node_data.get('name', node_id)}
             else:
-                print(f"Skipping node {node_id}: Unknown type '{node_data['type']}'")
+                logger.warning(
+                    f"Skipping node {node_id}: Unknown type '{node_type}'")
                 continue
 
-            #remove None values from properties
+            # Remove None values from properties
             properties = {k: v for k, v in properties.items() if v is not None}
 
-            #create the node in Neo4j
+            # node in Neo4j
             session.execute_write(create_node, node_id, labels, properties)
 
-        #create all relationships
+        # relationships
         for u, v, data in G.edges(data=True):
             if 'type' not in data:
-                print(f"Skipping edge {u}->{v}: Missing 'type' attribute")
+                logger.warning(f"Skipping edge {u}->{v}: Missing 'type' attribute")
                 continue
 
-            #source and target node data
             u_data = G.nodes[u]
             v_data = G.nodes[v]
 
-            #labels for source and target nodes
-            source_labels = []
-            if u_data.get('type') == 'microbe':
-                source_labels = ['Microbe']
-            elif u_data.get('type') == 'metabolite':
-                source_labels = ['Metabolite']
-            elif u_data.get('type') == 'pathway':
-                source_labels = ['Pathway']
-
-            target_labels = []
-            if v_data.get('type') == 'microbe':
-                target_labels = ['Microbe']
-            elif v_data.get('type') == 'metabolite':
-                target_labels = ['Metabolite']
-            elif v_data.get('type') == 'pathway':
-                target_labels = ['Pathway']
+            source_labels = _get_node_labels(u_data)  
+            target_labels = _get_node_labels(v_data)  
 
             rel_type = data['type'].upper().replace(' ', '_').replace('-', '_')
-            rel_props = {k: v for k, v in data.items() if k != 'type' and v is not None}
+            rel_props = {k: v for k, v in data.items() if
+                         k != 'type' and v is not None}
 
-            session.execute_write(create_relationship, u, source_labels, v, target_labels, rel_type, rel_props)
+            session.execute_write(create_relationship, u, source_labels, v,
+                                 target_labels, rel_type, rel_props)
 
     driver.close()
+
+
+def _get_node_labels(node_data: dict) -> list[str]:
+    """Helper function to get Neo4j labels for a node."""
+    node_type = node_data.get('type')
+    if node_type == 'microbe':
+        return ['microbe']
+    elif node_type == 'metabolite':
+        return ['metabolite']
+    elif node_type == 'pathway':
+        return ['pathway']
+    elif node_type == 'kegg_orthology':
+        return ['ko']
+    else:
+        return [] 
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)
@@ -196,8 +247,11 @@ strain_mean_biomass_df = strain_mean_biomass_df[common_cols]
 strain_mean_biomass = {id_to_strain[int(k)]: v for k, v in strain_mean_biomass.items() if int(k) in id_to_strain}
 
 subsystem_scores_per_microbe = pd.read_csv("/home/javad/pyprojects/MO_GEMs_Score/chain_results/subsystem_scores_per_microbe.csv")
+gene_df = pd.read_csv('/home/javad/pyprojects/MO_GEMs_Score/GraphRAG/geneKnockout/gene_df_info.csv')
 
-G = create_graphrag_knowledge_graph(pairwise_data, strain_mean_biomass, microbial_abundance, metabolite_info, subsystem_scores_per_microbe)
+G = create_graphrag_knowledge_graph(pairwise_data, strain_mean_biomass, microbial_abundance,
+                                     metabolite_info, subsystem_scores_per_microbe, gene_df)
+print('Graph is built....................')
 save_graph(G)
 print(f"Number of nodes in G: {G.number_of_nodes()}")
 print(f"Number of edges in G: {G.number_of_edges()}")
@@ -212,6 +266,6 @@ for u, v, d in G.edges(data=True):
 
 # for u, v, data in G.edges(data=True):
 #     print(f"Edge from {u} to {v}: {data}")
-
+print('Now converting to Neo4j..............')
 convert_nx_to_neo4j(G, NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD)
 print("NetworkX graph 'G' has been converted and loaded into Neo4j.")
