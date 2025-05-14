@@ -1,88 +1,94 @@
 # tools.py
 import json
 from typing import Dict, List, Optional, Union
-from crewai.tools import tool
-from neo4j_handler import Neo4jKnowledgeGraph 
-import config 
+
+from pydantic import BaseModel, Field
+from crewai.tools import BaseTool # tool decorator is not needed if class-based
+
+from neo4j_handler import Neo4jKnowledgeGraph
+import config
 
 logger = config.get_logger(__name__)
 
-# tools
-@tool("Execute Cypher Query Tool")
-def execute_cypher_query_tool(query_info: str) -> Union[List[Dict], Dict[str, str]]:
-    """
-    Executes a given Cypher query with parameters against the Neo4j database.
-    Input must be a JSON string containing 'query' (string) and 'params' (dict, optional).
-    Returns the list of result records (dictionaries) or an error dictionary.
-    Example input: '{"query": "MATCH (m:Microbe {name: $name}) RETURN m.abundance", "params": {"name": "E. coli"}}'
-    """
-    try:
-        data = json.loads(query_info)
-        query = data.get("query")
-        params = data.get("params")
+# Pydantic model for ExecuteCypherQueryToolClass input
+class ExecuteCypherQueryToolSchema(BaseModel):
+    """Input schema for ExecuteCypherQueryTool."""
+    query: str = Field(description="The Cypher query string to be executed.")
+    params: Optional[dict] = Field(default=None, description="An optional dictionary of parameters for the Cypher query.")
 
-        if not query or not isinstance(query, str):
-            return {"error": "Invalid input: 'query' field is missing or not a string."}
-        if params is not None and not isinstance(params, dict):
-             return {"error": "Invalid input: 'params' field must be a dictionary if provided."}
+# Class-based tool for executing Cypher queries
+class ExecuteCypherQueryToolClass(BaseTool):
+    name: str = "Execute Cypher Query Tool"
+    description: str = (
+        "Executes a given Cypher query with parameters against the Neo4j database. "
+        "The agent should provide 'query' and 'params' as arguments conforming to the schema."
+    )
+    args_schema: type[BaseModel] = ExecuteCypherQueryToolSchema
 
-        logger.info(f"Executing Cypher via tool. Query: {query[:100]}..., Params: {params}")
-        return Neo4jKnowledgeGraph.execute_cypher_query(query, params)
-    except json.JSONDecodeError:
-        logger.warning(f"Invalid JSON input to execute_cypher_query_tool: {query_info}")
-        return {"error": "Invalid input: Input must be a valid JSON string."}
-    except Exception as e:
-        logger.error(f"Error in execute_cypher_query_tool wrapper: {e}")
-        return {"error": f"Unexpected error processing query input: {e}"}
+    def _run(self, query: str, params: Optional[dict] = None) -> Union[List[Dict], Dict[str, str]]:
+        try:
+            if not query:
+                 logger.error("Query is empty.")
+                 return {"error": "Input 'query' cannot be empty."}
+            logger.info(f"Executing Cypher via tool (class-based). Query: {query[:100]}..., Params: {params}")
+            return Neo4jKnowledgeGraph.execute_cypher_query(query, params)
+        except Exception as e:
+            logger.error(f"Error in ExecuteCypherQueryTool _run method: {e}", exc_info=True)
+            return {"error": f"Unexpected error processing query input: {e}"}
 
-@tool("Get Graph Schema Tool")
-def get_graph_schema_tool(_) -> Union[Dict[str, Union[List[str], Dict[str, List[str]]]], Dict[str, str]]:
-    """
-    Retrieves the basic schema of the Neo4j graph, including node labels, relationship types,
-    and properties for Microbe, Metabolite, and Pathway nodes.
-    Input is ignored (can be empty string or None).
-    Returns a dictionary describing the schema or an error dictionary.
-    """
-    schema = {
-        "node_labels": [],
-        "relationship_types": [],
-        "properties": {}
-    }
-    try:
-        labels_result = Neo4jKnowledgeGraph.execute_cypher_query("CALL db.labels() YIELD label RETURN collect(label) as labels")
-        if isinstance(labels_result, list) and labels_result and "labels" in labels_result[0]:
-            schema["node_labels"] = labels_result[0].get("labels", [])
-        elif isinstance(labels_result, dict) and "error" in labels_result:
-             logger.error(f"Schema query error (labels): {labels_result['error']}")
-             return labels_result # Propagate DB error
+# --- Class-based Get Graph Schema Tool ---
+class GetGraphSchemaToolSchema(BaseModel):
+    """Input schema for GetGraphSchemaTool. Accepts no arguments."""
+    pass # No arguments needed
 
-        rel_types_result = Neo4jKnowledgeGraph.execute_cypher_query("CALL db.relationshipTypes() YIELD relationshipType RETURN collect(relationshipType) as relTypes")
-        if isinstance(rel_types_result, list) and rel_types_result and "relTypes" in rel_types_result[0]:
-            schema["relationship_types"] = rel_types_result[0].get("relTypes", [])
-        elif isinstance(rel_types_result, dict) and "error" in rel_types_result:
-             logger.error(f"Schema query error (relTypes): {rel_types_result['error']}")
-             return rel_types_result # Propagate DB error
+class GetGraphSchemaToolClass(BaseTool):
+    name: str = "Get Graph Schema Tool"
+    description: str = (
+        "Retrieves the basic schema of the Neo4j graph, including node labels, relationship types, "
+        "and properties for Microbe, Metabolite, Pathway, and KO nodes. "
+        "This tool takes no arguments."
+    )
+    args_schema: type[BaseModel] = GetGraphSchemaToolSchema # Use the empty schema
 
-        target_labels = ["Microbe", "Metabolite", "Pathway"]
-        available_labels = [label for label in target_labels if label in schema["node_labels"]]
+    def _run(self) -> Union[Dict[str, Union[List[str], Dict[str, List[str]]]], Dict[str, str]]:
+        # The agent might still pass an empty dict "{}" as input, but Pydantic with an empty schema should handle it.
+        logger.info("GetGraphSchemaToolClass._run() called")
+        schema = {
+            "node_labels": [],
+            "relationship_types": [],
+            "properties": {}
+        }
+        try:
+            labels_result = Neo4jKnowledgeGraph.execute_cypher_query("CALL db.labels() YIELD label RETURN collect(label) as labels")
+            if isinstance(labels_result, list) and labels_result and "labels" in labels_result[0]:
+                schema["node_labels"] = labels_result[0].get("labels", [])
+            elif isinstance(labels_result, dict) and "error" in labels_result: return labels_result
 
-        for label in available_labels:
-             #a note from riddit:: this kind of query might be slow on large graphs, consider sampling or optimized procedures if available
-            props_query = f"""
-                MATCH (n:{label})
-                WITH keys(n) AS keys
-                UNWIND keys AS key
-                RETURN collect(distinct key) as properties
-                LIMIT 1
-            """
-            props_result = Neo4jKnowledgeGraph.execute_cypher_query(props_query)
-            if isinstance(props_result, list) and props_result and "properties" in props_result[0]:
-                schema["properties"][label] = props_result[0].get("properties", [])
-            elif isinstance(props_result, dict) and "error" in props_result:
-                logger.warning(f"Schema query error (properties for {label}): {props_result['error']}")
+            rel_types_result = Neo4jKnowledgeGraph.execute_cypher_query("CALL db.relationshipTypes() YIELD relationshipType RETURN collect(relationshipType) as relTypes")
+            if isinstance(rel_types_result, list) and rel_types_result and "relTypes" in rel_types_result[0]:
+                schema["relationship_types"] = rel_types_result[0].get("relTypes", [])
+            elif isinstance(rel_types_result, dict) and "error" in rel_types_result: return rel_types_result
 
-        logger.info(f"Retrieved graph schema: {schema}")
-        return schema
-    except Exception as e:
-        logger.error(f"Failed to retrieve graph schema: {e}")
-        return {"error": f"Failed to retrieve schema: {e}"}
+            target_labels_in_code = ["Microbe", "Metabolite", "Pathway", "KO"]
+            neo4j_label_map = {
+                "Microbe": "microbe", "Metabolite": "metabolite",
+                "Pathway": "pathway", "KO": "KO"
+            }
+            available_neo4j_labels = [neo4j_label_map[label] for label in target_labels_in_code if neo4j_label_map.get(label) in schema["node_labels"]]
+
+            for neo4j_label in available_neo4j_labels:
+                 schema_key = next((key for key, value in neo4j_label_map.items() if value == neo4j_label), None)
+                 if not schema_key: continue
+                 props_query = f"MATCH (n:{neo4j_label}) WHERE n IS NOT NULL WITH keys(n) AS keys UNWIND keys AS key RETURN collect(distinct key) as properties LIMIT 1"
+                 props_result = Neo4jKnowledgeGraph.execute_cypher_query(props_query)
+                 if isinstance(props_result, list) and props_result and "properties" in props_result[0]:
+                     schema["properties"][schema_key] = props_result[0].get("properties", [])
+                 elif isinstance(props_result, dict) and "error" in props_result:
+                     logger.warning(f"Schema query error (properties for {schema_key} using label {neo4j_label}): {props_result['error']}")
+                 else:
+                     schema["properties"][schema_key] = []
+            logger.info(f"Retrieved final graph schema: {schema}")
+            return schema
+        except Exception as e:
+            logger.error(f"Failed to retrieve graph schema: {e}", exc_info=True)
+            return {"error": f"Failed to retrieve schema due to unexpected error: {e}"}

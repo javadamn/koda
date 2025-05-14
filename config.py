@@ -1,6 +1,7 @@
 import os
 import logging
 from dotenv import load_dotenv
+import sys
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -9,17 +10,39 @@ NEO4J_URI = os.getenv("NEO4J_URI", "bolt://localhost:7687")
 NEO4J_USER = os.getenv("NEO4J_USER", "neo4j")
 NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD", "Javadad6908") 
 
+LOG_FILE_NAME = "graphrag_pipeline.log"
+LOG_FORMAT = '%(asctime)s - %(levelname)s - [%(name)s | %(filename)s:%(lineno)d] - %(message)s'
+LOG_LEVEL = logging.INFO #logging.DEBUG: for more verbose logs from all modules
+
+LLM_TEMPERATURE =0.7
+
+#rremove any existinh handlers from the root logger
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
+
+
+logging.basicConfig(
+    level=LOG_LEVEL,
+    format=LOG_FORMAT,
+    handlers=[
+        logging.FileHandler(LOG_FILE_NAME, mode='w'), # Log to a file, overwrite mode
+        logging.StreamHandler(sys.stdout) # Also log to console
+    ]
+)
+
 #logging if needed
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - [%(name)s] %(message)s')
 logger = logging.getLogger(__name__)
-logging.getLogger('httpx').setLevel(logging.WARNING) 
-logging.getLogger('crewai').setLevel(logging.INFO)
+#quieten noisy libraries if needed by setting their log level higher
+logging.getLogger('httpx').setLevel(logging.WARNING)
+logging.getLogger('httpcore').setLevel(logging.WARNING)
+# Set CrewAI's specific logger level if desired 
+logging.getLogger('crewai').setLevel(logging.INFO) #logging.DEBUG for very verbose crew logs
 
 def get_logger(name: str) -> logging.Logger:
     """Gets a logger instance."""
     return logging.getLogger(name)
 
-logger.info("Configuration loaded.")
+logger.info(f"Configuration loaded. Logging to console and '{LOG_FILE_NAME}'. Log level: {logging.getLevelName(LOG_LEVEL)}")
 
 if not OPENAI_API_KEY:
     logger.warning("OPENAI_API_KEY environment variable not set.")

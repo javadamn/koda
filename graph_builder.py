@@ -156,17 +156,17 @@ def convert_nx_to_neo4j(G: nx.DiGraph, neo4j_uri: str, neo4j_user: str,
 
             node_type = node_data['type']
             if node_type == 'microbe':
-                labels = ['microbe']
+                labels = ['Microbe']
                 properties = {'name': node_id,
                               'abundance': node_data.get('abundance')}
             elif node_type == 'metabolite':
-                labels = ['metabolite']
+                labels = ['Metabolite']
                 properties = {'name': node_data.get('name', node_id)}
             elif node_type == 'pathway':
-                labels = ['pathway']
+                labels = ['Pathway']
                 properties = {'name': node_data.get('name', node_id)}
             elif node_type == 'kegg_orthology': 
-                labels = ['ko']
+                labels = ['KO']
                 properties = {'name': node_data.get('name', node_id)}
             else:
                 logger.warning(
@@ -205,13 +205,13 @@ def _get_node_labels(node_data: dict) -> list[str]:
     """Helper function to get Neo4j labels for a node."""
     node_type = node_data.get('type')
     if node_type == 'microbe':
-        return ['microbe']
+        return ['Microbe']
     elif node_type == 'metabolite':
-        return ['metabolite']
+        return ['Metabolite']
     elif node_type == 'pathway':
-        return ['pathway']
+        return ['Pathway']
     elif node_type == 'kegg_orthology':
-        return ['ko']
+        return ['KO']
     else:
         return [] 
 
