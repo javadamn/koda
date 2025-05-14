@@ -25,17 +25,14 @@ logging.basicConfig(
     level=LOG_LEVEL,
     format=LOG_FORMAT,
     handlers=[
-        logging.FileHandler(LOG_FILE_NAME, mode='w'), # Log to a file, overwrite mode
-        logging.StreamHandler(sys.stdout) # Also log to console
+        logging.FileHandler(LOG_FILE_NAME, mode='w'), 
+        logging.StreamHandler(sys.stdout) 
     ]
 )
 
-#logging if needed
 logger = logging.getLogger(__name__)
-#quieten noisy libraries if needed by setting their log level higher
 logging.getLogger('httpx').setLevel(logging.WARNING)
 logging.getLogger('httpcore').setLevel(logging.WARNING)
-# Set CrewAI's specific logger level if desired 
 logging.getLogger('crewai').setLevel(logging.INFO) #logging.DEBUG for very verbose crew logs
 
 def get_logger(name: str) -> logging.Logger:

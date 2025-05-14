@@ -1,22 +1,18 @@
-# tools.py
 import json
-from typing import Dict, List, Optional, Union
-
+from typing import Dict, List, Optional, Union, Any
 from pydantic import BaseModel, Field
-from crewai.tools import BaseTool # tool decorator is not needed if class-based
+from crewai.tools import BaseTool 
 
 from neo4j_handler import Neo4jKnowledgeGraph
 import config
 
 logger = config.get_logger(__name__)
 
-# Pydantic model for ExecuteCypherQueryToolClass input
 class ExecuteCypherQueryToolSchema(BaseModel):
     """Input schema for ExecuteCypherQueryTool."""
     query: str = Field(description="The Cypher query string to be executed.")
     params: Optional[dict] = Field(default=None, description="An optional dictionary of parameters for the Cypher query.")
 
-# Class-based tool for executing Cypher queries
 class ExecuteCypherQueryToolClass(BaseTool):
     name: str = "Execute Cypher Query Tool"
     description: str = (
@@ -36,10 +32,10 @@ class ExecuteCypherQueryToolClass(BaseTool):
             logger.error(f"Error in ExecuteCypherQueryTool _run method: {e}", exc_info=True)
             return {"error": f"Unexpected error processing query input: {e}"}
 
-# --- Class-based Get Graph Schema Tool ---
+#_-_-_Class-based Get Graph Schema Tool_____________________________________
 class GetGraphSchemaToolSchema(BaseModel):
     """Input schema for GetGraphSchemaTool. Accepts no arguments."""
-    pass # No arguments needed
+    pass 
 
 class GetGraphSchemaToolClass(BaseTool):
     name: str = "Get Graph Schema Tool"
@@ -48,10 +44,9 @@ class GetGraphSchemaToolClass(BaseTool):
         "and properties for Microbe, Metabolite, Pathway, and KO nodes. "
         "This tool takes no arguments."
     )
-    args_schema: type[BaseModel] = GetGraphSchemaToolSchema # Use the empty schema
+    args_schema: type[BaseModel] = GetGraphSchemaToolSchema 
 
     def _run(self) -> Union[Dict[str, Union[List[str], Dict[str, List[str]]]], Dict[str, str]]:
-        # The agent might still pass an empty dict "{}" as input, but Pydantic with an empty schema should handle it.
         logger.info("GetGraphSchemaToolClass._run() called")
         schema = {
             "node_labels": [],

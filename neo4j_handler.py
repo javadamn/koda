@@ -23,8 +23,8 @@ class Neo4jKnowledgeGraph:
                 logger.info(f"Neo4j driver initialized for URI: {config.NEO4J_URI}")
             except Exception as e:
                 logger.critical(f"Failed to create Neo4j driver: {e}")
-                cls._driver = None #making sure driver is None if connection fails
-                raise #Re-raise the exception to be caught downstream
+                cls._driver = None #making sure driver is None ::>> if connection fails
+                raise 
         return cls._driver
 
     @classmethod
