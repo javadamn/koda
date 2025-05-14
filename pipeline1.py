@@ -146,7 +146,7 @@ class MicrobialAnalysisPipeline:
                 (potential_json_inner.startswith("[") and potential_json_inner.endswith("]")):
 
                 try:
-                    json.loads(potential_json_inner) # Validate
+                    json.loads(potential_json_inner)
                     logger.info(f"Extracted JSON after stripping outer quotes: {potential_json_inner[:200]}...")
                     return potential_json_inner
                 except json.JSONDecodeError:

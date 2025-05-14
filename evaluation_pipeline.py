@@ -1,4 +1,3 @@
-# evaluation_pipeline.py
 import json
 import time
 import re
@@ -8,7 +7,7 @@ from pydantic import BaseModel, Field, AliasChoices, ConfigDict, ValidationError
 from crewai import Agent, Task, Crew, Process, TaskOutput 
 from langchain_openai import ChatOpenAI
 
-from pipeline1 import MicrobialAnalysisPipeline # Your main pipeline
+from pipeline1 import MicrobialAnalysisPipeline 
 from schema import GRAPH_SCHEMA_DESCRIPTION
 import config
 
@@ -16,7 +15,7 @@ EVAL_LLM_MODEL = config.LLM_MODEL
 EVAL_LLM_TEMPERATURE = 0.1
 logger = config.get_logger("EvaluationPipeline")
 
-# --- Pydantic Models ---
+# --- ##::Pydantic Models ---
 class CypherReviewSchema(BaseModel):
     model_config = ConfigDict(populate_by_name=True, extra='ignore')
     syntactic_validity: int = Field(..., ge=1, le=5, validation_alias=AliasChoices('syntactic_validity', 'Syntactic Validity'))
@@ -40,7 +39,7 @@ class AnalysisReviewSchema(BaseModel):
 def get_eval_llm():
     return ChatOpenAI(model_name=EVAL_LLM_MODEL, temperature=EVAL_LLM_TEMPERATURE, openai_api_key=config.OPENAI_API_KEY)
 
-# --- Reviewer Agents ---
+# --- ##::Reviewer Agents ---
 cypher_query_reviewer_agent = Agent(
     role="Expert Cypher Query Reviewer and Neo4j Specialist",
     goal=f"""
@@ -84,7 +83,7 @@ analysis_report_reviewer_agent = Agent(
     """,
     backstory="You are a seasoned researcher in microbial genomics...",
     llm=get_eval_llm(), verbose=True, allow_delegation=False,
-    output_json_parser=AnalysisReviewSchema # CrewAI will try to parse output into this model
+    output_json_parser=AnalysisReviewSchema 
 )
 
 def _get_agent_final_answer_str_from_task_output_eval(task_output_obj: Any) -> Optional[str]:
@@ -94,7 +93,6 @@ def _get_agent_final_answer_str_from_task_output_eval(task_output_obj: Any) -> O
     """
     if task_output_obj is None: return None
     
-    # If output_json_parser on Agent worked, task_output_obj might be the Pydantic model or dict
     if isinstance(task_output_obj, BaseModel):
         try: return task_output_obj.model_dump_json()
         except Exception: return str(task_output_obj)
@@ -105,12 +103,10 @@ def _get_agent_final_answer_str_from_task_output_eval(task_output_obj: Any) -> O
 
     text_to_search = ""
     if isinstance(task_output_obj, TaskOutput):
-        # e is the most likely place for parsed JSON from output_json_parser
         if task_output_obj.expected_output:
             if isinstance(task_output_obj.expected_output, str): return task_output_obj.expected_output
             if isinstance(task_output_obj.expected_output, dict): return json.dumps(task_output_obj.expected_output)
             if isinstance(task_output_obj.expected_output, BaseModel): return task_output_obj.expected_output.model_dump_json()
-        # Fallback to description or raw_output
         if task_output_obj.description and isinstance(task_output_obj.description, str):
             text_to_search = task_output_obj.description
         elif hasattr(task_output_obj, 'raw') and isinstance(task_output_obj.raw, str):
@@ -119,13 +115,10 @@ def _get_agent_final_answer_str_from_task_output_eval(task_output_obj: Any) -> O
     else: text_to_search = str(task_output_obj)
 
     logger.debug(f"_get_agent_final_answer_str_from_task_output_eval: Text to search (first 500 chars): {text_to_search[:500]}")
-    # Reviewer agents are instructed to ONLY output JSON, so we don't expect "Final Answer:"
-    # However, they might still wrap it in markdown.
     json_block_match = re.search(r"```json\s*(\{[\s\S]*?\})\s*```", text_to_search, re.IGNORECASE | re.DOTALL)
     if json_block_match:
         return json_block_match.group(1).strip()
     
-    # If no markdown, assume the cleaned string is the JSON
     return text_to_search.strip()
 
 
