@@ -8,7 +8,7 @@ import config
 
 logger = config.get_logger(__name__)
 
-class ExecuteCypherQueryToolSchema(BaseModel):
+class CypherQueryTool_schema(BaseModel):
     """Input schema for ExecuteCypherQueryTool."""
     query: str = Field(description="The Cypher query string to be executed.")
     params: Optional[dict] = Field(default=None, description="An optional dictionary of parameters for the Cypher query.")
@@ -19,7 +19,7 @@ class ExecuteCypherQueryToolClass(BaseTool):
         "Executes a given Cypher query with parameters against the Neo4j database. "
         "The agent should provide 'query' and 'params' as arguments conforming to the schema."
     )
-    args_schema: type[BaseModel] = ExecuteCypherQueryToolSchema
+    args_schema: type[BaseModel] = CypherQueryTool_schema
 
     def _run(self, query: str, params: Optional[dict] = None) -> Union[List[Dict], Dict[str, str]]:
         try:
@@ -33,7 +33,7 @@ class ExecuteCypherQueryToolClass(BaseTool):
             return {"error": f"Unexpected error processing query input: {e}"}
 
 #_-_-_Class-based Get Graph Schema Tool_____________________________________
-class GetGraphSchemaToolSchema(BaseModel):
+class GetGraphSchemaTool_schema(BaseModel):
     """Input schema for GetGraphSchemaTool. Accepts no arguments."""
     pass 
 
@@ -44,7 +44,7 @@ class GetGraphSchemaToolClass(BaseTool):
         "and properties for Microbe, Metabolite, Pathway, and KO nodes. "
         "This tool takes no arguments."
     )
-    args_schema: type[BaseModel] = GetGraphSchemaToolSchema 
+    args_schema: type[BaseModel] = GetGraphSchemaTool_schema 
 
     def _run(self) -> Union[Dict[str, Union[List[str], Dict[str, List[str]]]], Dict[str, str]]:
         logger.info("GetGraphSchemaToolClass._run() called")

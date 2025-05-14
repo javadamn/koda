@@ -92,7 +92,7 @@ class MicrobialAnalysisPipeline:
             self.report_writer
         ]
 
-    def _get_agent_final_answer_from_task(self, task: Task) -> Optional[str]:
+    def _get_agent_answer_from_task(self, task: Task) -> Optional[str]:
         """
         Safely extracts the agent's final answer string from a completed Task object.
         CrewAI stores the agent's final response in task.output.raw_output after kickoff.
@@ -166,7 +166,7 @@ class MicrobialAnalysisPipeline:
         logger.error(f"Could not extract clean JSON string from agent's final answer: {agent_final_answer[:300]}")
         return None
 
-    def _extract_data_from_retriever_final_answer(self, retriever_agent_final_answer: Optional[str]) -> Union[List[Dict[str, Any]], Dict[str, str]]:
+    def _extract_data_from_retriever(self, retriever_agent_final_answer: Optional[str]) -> Union[List[Dict[str, Any]], Dict[str, str]]:
         if not retriever_agent_final_answer:
             return {"error": "InformationRetrieverAgent produced no final answer string."}
 
@@ -235,7 +235,7 @@ class MicrobialAnalysisPipeline:
         crew.kickoff() 
         logger.info("Main Pipeline: Crew execution finished.")
 
-        qc_agent_final_answer_str = self._get_agent_final_answer_from_task(construct_query_task)
+        qc_agent_final_answer_str = self._get_agent_answer_from_task(construct_query_task)
         generated_cypher_json_str_output = self._extract_json_from_string(qc_agent_final_answer_str)
         if not generated_cypher_json_str_output:
             generated_cypher_json_str_output = json.dumps({
@@ -243,10 +243,10 @@ class MicrobialAnalysisPipeline:
                 "raw_agent_final_answer": qc_agent_final_answer_str or "No output string from QueryConstructorAgent task."
             })
 
-        retriever_agent_final_answer_str = self._get_agent_final_answer_from_task(retrieve_data_task)
-        retrieved_data_actual = self._extract_data_from_retriever_final_answer(retriever_agent_final_answer_str)
+        retriever_agent_final_answer_str = self._get_agent_answer_from_task(retrieve_data_task)
+        retrieved_data_actual = self._extract_data_from_retriever(retriever_agent_final_answer_str)
         
-        final_report_output_str = self._get_agent_final_answer_from_task(write_report_task)
+        final_report_output_str = self._get_agent_answer_from_task(write_report_task)
         if not final_report_output_str:
             final_report_output_str = "Error: Could not retrieve final report string from write_report_task."
 
