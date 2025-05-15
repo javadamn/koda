@@ -1,0 +1,22 @@
+[project]
+name = "microflow"
+version = "0.1.0"
+description = "microflow using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "crewai[tools]>=0.118.0,<1.0.0",
+    "neo4j",
+]
+
+[project.scripts]
+kickoff = "microflow.main:kickoff"
+run_crew = "microflow.main:kickoff"
+plot = "microflow.main:plot"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "flow"
