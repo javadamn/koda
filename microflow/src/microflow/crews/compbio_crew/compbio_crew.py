@@ -73,7 +73,7 @@ class CompbioCrew:
     def create_and_execute_cypher_query(self) -> Task:
         return Task(
             config=self.tasks_config["create_and_execute_cypher_query"],  # type: ignore[index]
-            agent=self.data_engineer,
+            agent=self.data_engineer(),
             verbose=True,
         )
 
@@ -90,7 +90,7 @@ class CompbioCrew:
     def analyze_retrieved_data(self) -> Task:
         return Task(
             config=self.tasks_config["analyze_retrieved_data"],  # type: ignore[index]
-            agent=self.content_analyst,
+            agent=self.content_analyst(),
             context=[self.create_and_execute_cypher_query()],
             verbose=True,
         )
@@ -100,7 +100,7 @@ class CompbioCrew:
         return Task(
             config=self.tasks_config["write_report"],  # type: ignore[index]
             context=[self.analyze_retrieved_data()],
-            agent=self.report_writer,
+            agent=self.report_writer(),
             output_file="report.md",
             verbose=True,
         )
@@ -112,6 +112,7 @@ class CompbioCrew:
         # https://docs.crewai.com/concepts/knowledge#what-is-knowledge
 
         return Crew(
+            name="Compbio Crew",
             agents=self.agents,  # Automatically created by the @agent decorator
             tasks=self.tasks,  # Automatically created by the @task decorator
             process=Process.sequential,
