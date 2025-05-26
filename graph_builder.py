@@ -224,7 +224,7 @@ logger.addHandler(handler)
 
 NEO4J_URI = os.getenv("NEO4J_URI", "bolt://localhost:7687")
 NEO4J_USER = os.getenv("NEO4J_USER", "neo4j")
-NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD", "Javadad6908")
+NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD", "here_is_password") ## the pasword
 
 driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
 pairwise_data, _, _, _, strain_mean_biomass = read_pairwise_data(PAIRWISE_PATH)
