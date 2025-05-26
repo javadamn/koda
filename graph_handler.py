@@ -6,12 +6,12 @@ from typing import Dict, List, Optional, Union
 from neo4j import GraphDatabase
 from neo4j.exceptions import CypherSyntaxError
 
-import config # Import configuration
+import config 
 
 logger = logging.getLogger(__name__)
 
 class Neo4jKnowledgeGraph:
-    _driver = None # Class level driver
+    _driver = None 
 
     @classmethod
     def get_driver(cls):
@@ -49,20 +49,20 @@ class Neo4jKnowledgeGraph:
             try:
                 with driver.session() as session:
                     result = session.run(query, params or {})
-                    # Consume results fully before session closes
+                    
                     records = [dict(record) for record in result]
                     logger.info(f"Cypher query executed successfully (Attempt {attempt + 1}). Query: '{query}', Parameters: {params}, Records returned: {len(records)}")
                     return records
             except CypherSyntaxError as e:
                 error_message = f"Cypher Syntax Error: {e}. Query: '{query}', Parameters: {params}"
                 logger.error(error_message)
-                return {"error": error_message} # Don't retry syntax errors
+                return {"error": error_message} 
             except Exception as e:
-                # Check for specific transient errors if needed, otherwise retry general exceptions
+                
                 logger.error(f"Error executing Cypher query (attempt {attempt + 1}/{retries}): {e}. Query: '{query}', Parameters: {params}")
                 if attempt < retries - 1:
-                    time.sleep(delay * (attempt + 1)) # Exponential backoff
+                    time.sleep(delay * (attempt + 1))
                 else:
                     return {"error": f"Failed to execute Cypher query after {retries} attempts: {e}. Query: '{query}'"}
-        # Fallback if loop finishes unexpectedly
+        
         return {"error": "Query execution failed unexpectedly."}
