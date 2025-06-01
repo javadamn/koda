@@ -1,3 +1,4 @@
+<br>[![bioRxiv](https://img.shields.io/badge/bioRxiv-10.1101%2F2025.05.27.656377-orange)](https://doi.org/10.1101/2025.05.27.656480)<br>
 # KODA: An Agentic Framework for KEGG Orthology-Driven Discovery of Antimicrobial Drug Targets in Gut Microbiome
 
 We introduce **KODA**, a multi-agent framework that combines LLMs with a Neo4j-based knowledge graph to identify potential antimicrobial drug targets in the human gut microbiome. KODA enables natural language querying of microbiome data and generates analytical reports focused on KEGG orthologies (KOs) linked to essential microbial genes.
@@ -50,8 +51,8 @@ python main.py
 
 If you use this repository, please cite:
 
-**KODA: An Agentic Framework for KEGG Orthology-Driven Discovery of Antimicrobial Drug Targets in Gut Microbiome**  
-*Paper link coming soon*
+[**KODA: An Agentic Framework for KEGG Orthology-Driven Discovery of Antimicrobial Drug Targets in Gut Microbiome**  
+](https://doi.org/10.1101/2025.05.27.656480)
 
 ## License
 
